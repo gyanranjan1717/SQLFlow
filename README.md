@@ -48,6 +48,13 @@ npm start
 > node ./node_modules/vite/bin/vite.js
 > ```
 
+### ⚡ Or run both from the root folder (no need to `cd` into subfolders)
+```bash
+# from the root sql_viewer/ folder
+npm run start:backend    # starts backend  → http://127.0.0.1:8000
+npm run start:frontend   # starts frontend → http://localhost:5173
+```
+
 ---
 
 ## Features
