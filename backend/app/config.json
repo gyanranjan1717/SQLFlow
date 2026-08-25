@@ -1,0 +1,9 @@
+{
+  "active_provider": "gemini",
+  "gemini_model": "gemini-3.5-flash",
+  "openai_model": "gpt-3.5-turbo",
+  "temperature": 0.1,
+  "admin_pin": "admin123",
+  "custom_table_prompt": "You are an expert OCR system specializing in tabular data extraction.\nAnalyze this image and extract any table present.\nReturn ONLY a valid JSON object matching this exact schema:\n{\n  \"table_name\": \"inferred_or_detected_name_lowercase_snake_case\",\n  \"columns\": [\n    {\"name\": \"col_name\", \"type\": \"INTEGER\" | \"FLOAT\" | \"VARCHAR\" | \"BOOLEAN\"}\n  ],\n  \"rows\": [\n    {\"col1\": value1, \"col2\": value2}\n  ]\n}\nDo not include markdown code block wrappers (like ```json), just return the pure JSON.",
+  "custom_query_prompt": "Extract the SQL query written in this image. Return ONLY the raw SQL query code, nothing else."
+}
