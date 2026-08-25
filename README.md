@@ -27,16 +27,26 @@ An interactive, visual SQL learning and execution debugging application. It brea
 ### 1. Start the Backend Server (FastAPI)
 ```bash
 cd backend
-.\venv\Scripts\python.exe run.py
+.\start
 ```
 *Backend runs on `http://127.0.0.1:8000` (Swagger docs at `/docs`).*
+
+> **Old command (same thing, the long way):**
+> ```bash
+> .\venv\Scripts\python.exe run.py
+> ```
 
 ### 2. Start the Frontend App (React + Vite)
 ```bash
 cd frontend
-node ./node_modules/vite/bin/vite.js
+npm start
 ```
 *Frontend runs on `http://localhost:5173`.*
+
+> **Old command (same thing, the long way):**
+> ```bash
+> node ./node_modules/vite/bin/vite.js
+> ```
 
 ---
 
