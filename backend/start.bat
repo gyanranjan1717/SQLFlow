@@ -1,0 +1,3 @@
+@echo off
+echo Starting SQLFlow Backend...
+.\venv\Scripts\python.exe run.py

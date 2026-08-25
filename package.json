@@ -1,0 +1,9 @@
+{
+  "name": "sqlflow",
+  "private": true,
+  "scripts": {
+    "start:backend": "cd backend && .\\venv\\Scripts\\python.exe run.py",
+    "start:frontend": "cd frontend && npm start",
+    "dev": "start cmd /k \"cd backend && .\\venv\\Scripts\\python.exe run.py\" && cd frontend && npm start"
+  }
+}
