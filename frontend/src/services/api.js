@@ -1,7 +1,7 @@
-const API_BASE = '/api';
+const API_BASE = `${import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000'}/api`;
 
 export async function fetchHealth() {
-  const res = await fetch('/health');
+  const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000'}/health`);
   if (!res.ok) throw new Error('Health check failed');
   return res.json();
 }
