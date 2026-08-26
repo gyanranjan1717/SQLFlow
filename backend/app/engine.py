@@ -71,6 +71,23 @@ class ExecutionEngine:
                 error=f"SQL Parse Error: {str(e)}"
             )
 
+        # Pre-materialize any CTEs (WITH clause) into temporary tables in DuckDB
+        if parsed.ctes:
+            for alias, cte_sql in parsed.ctes:
+                try:
+                    create_temp_query = f"CREATE OR REPLACE TEMP TABLE {alias} AS ({cte_sql})"
+                    self.con.execute(create_temp_query)
+                except Exception as e:
+                    return VisualizeResponse(
+                        success=False,
+                        query=raw_query,
+                        steps=[],
+                        final_result=[],
+                        columns=[],
+                        ast_info=parsed.ast_info,
+                        error=f"CTE Execution Error in '{alias}': {str(e)}"
+                    )
+
         steps: List[StepSnapshot] = []
         
         # We will follow the 10 logical processing steps
@@ -197,16 +214,25 @@ class ExecutionEngine:
 
         tables_str = ", ".join(parsed.ast_info.tables) or "source"
         join_desc = f" with {len(joins)} JOIN(s)" if joins else ""
-        desc = f"Identified and loaded {len(df)} initial raw records from {tables_str}{join_desc}."
+        
+        cte_desc = ""
+        clause_display_sql = full_from_sql
+        if parsed.ctes:
+            cte_names_str = ", ".join(alias for alias, _ in parsed.ctes)
+            cte_desc = f"Pre-evaluated and materialized {len(parsed.ctes)} CTE(s) [{cte_names_str}]. "
+            with_summary = f"WITH {', '.join([f'{alias} AS (...)' for alias, _ in parsed.ctes])}"
+            clause_display_sql = f"{with_summary}\n{full_from_sql}"
+
+        desc = f"{cte_desc}Identified and loaded {len(df)} initial raw records from {tables_str}{join_desc}."
 
         snapshot = StepSnapshot(
             step_number=1,
             step_id="from_join",
             clause_name="FROM / JOIN",
-            clause_sql=full_from_sql,
-            title="Identify Source Tables & Join Records",
+            clause_sql=clause_display_sql,
+            title="Identify Source Tables & Join Records" if not parsed.ctes else "Materialize CTEs & Load Joined Records",
             description=desc,
-            concept_tip="SQL execution starts here. The database identifies the source tables and builds the working cross-product or joined dataset before evaluating any filters or aggregations.",
+            concept_tip="SQL execution starts here. Any defined WITH CTEs are pre-computed into memory first, then source/CTE tables are joined to build the initial working dataset before filters or aggregations.",
             columns=columns,
             rows=rows,
             stats=StepStats(

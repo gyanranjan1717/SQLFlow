@@ -49,6 +49,8 @@ class AstInfo(BaseModel):
     has_distinct: bool = False
     has_order_by: bool = False
     has_limit: bool = False
+    has_cte: bool = False
+    cte_names: List[str] = Field(default_factory=list)
     aggregates_used: List[str] = Field(default_factory=list)
     window_funcs_used: List[str] = Field(default_factory=list)
 

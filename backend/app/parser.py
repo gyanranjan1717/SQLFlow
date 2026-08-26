@@ -21,10 +21,21 @@ class ParsedSql:
                 raise ValueError("Only SELECT queries are supported in the visualizer.")
             self.expression = select
 
+        self.ctes: List[Tuple[str, str]] = []
+        for cte in self.expression.find_all(exp.CTE):
+            alias = cte.alias
+            sql_str = cte.this.sql()
+            if alias:
+                self.ctes.append((alias, sql_str))
+
         self.ast_info = self._extract_ast_info()
 
     def _extract_ast_info(self) -> AstInfo:
-        tables = [t.name for t in self.expression.find_all(exp.Table)]
+        cte_names = [alias for alias, _ in self.ctes]
+        has_cte = len(cte_names) > 0
+
+        all_tables = [t.name for t in self.expression.find_all(exp.Table)]
+        tables = [t for t in all_tables if t not in cte_names]
         
         has_where = self.expression.find(exp.Where) is not None
         has_group_by = self.expression.find(exp.Group) is not None
@@ -51,6 +62,8 @@ class ParsedSql:
             has_distinct=has_distinct,
             has_order_by=has_order_by,
             has_limit=has_limit,
+            has_cte=has_cte,
+            cte_names=cte_names,
             aggregates_used=aggregates,
             window_funcs_used=windows
         )
